@@ -1,0 +1,141 @@
+Pipeline for MRDS
+=========================
+
+USAGE
+=======
+
+nextflow run main.nf --input ... [OPTIONAL_ARGUMENTS]
+To call with a container add:
+    -with-singularity mrds_flow.sif
+    -with-docker mrds_flow
+
+You will need this container (tag:1.0.0) in order to run the pipeline.
+- https://hub.docker.com/r/erickberto/mrds-flow
+
+MRDS must be installed from https://github.com/rcleija/mrds (already install in the container)
+
+
+Warning
+=======
+If using this pipeline, please read and cite the following publications:
+[1] MRDS-paper 
+[2] Frontiers paper
+
+DESCRIPTION
+=======
+
+    --input=/path/to/[root]             Root folder containing multiple subjects
+
+                                        [root]
+                                        ├── S1
+                                        │   ├── *dwi.nii.gz
+                                        │   ├── *mask.nii.gz (optional mask, WM mask is highly recommended)
+                                        |   ├── *.bvec
+                                        |   ├── *.bval
+                                        │   └── *tracking.trk (optional to perform TODI model selection)
+                                        └── S2
+                                            └── *
+
+    OPTIONAL ARGUMENTS (current value)
+    --use_isotropic                     Include isotropic tensor fitting to MRDS ($use_isotropic)
+    --r_threshold                       Relative threshold on fODF amplitude in percentage ($r_threshold)
+    --mrds_processes                    The number of parallel processes used for FIT_MRDS ($mrds_processes)
+    --processes                         The number of parallel processes to launch ($cpu_count).
+                                        Only affects the local scheduler.
+
+
+AVAILABLE PROFILES (using -profile option (e.g. -profile fully_reproducible, cbrain))
+=======
+
+fully_reproducible                       When this profile is used, all the parameters will be set to have 100% reproducible results.
+
+macos                                    When this profile is used, mrds_flow will modify a parameter (scratch) for MacOS users.
+
+cbrain                                   When this profile is used, Nextflow will copy all the output files in publishDir and not use symlinks.
+
+OUTPUT
+=======
+
+    results_mrds/                       Root folder containing multiple subjects
+
+                                        [root]
+                                        ├── S1
+                                        │   ├── Convert_Scheme
+                                        │   │   └── *scheme.b (scheme file)
+                                        |   ├── Compute_Mask
+                                        |   |   └── *mask.nii.gz (automatic computed WM mask)
+                                        │   ├── Fit_MRDS
+                                        │   │   ├── *__MRDS_D1_signal_fraction.nii.gz (1 tensor MRDS files)
+                                        │   │   ├── *__MRDS_D1_eigenvalues.nii.gz
+                                        │   │   ├── *__MRDS_D1_isotropic.nii.gz
+                                        │   │   ├── *__MRDS_D1_num_tensors.nii.gz
+                                        │   │   ├── *__MRDS_D1_evecs.nii.gz
+                                        │   │   ├── *__MRDS_D2_signal_fraction.nii.gz (2 tensor MRDS files)
+                                        │   │   ├── *__MRDS_D2_eigenvalues.nii.gz
+                                        │   │   ├── *__MRDS_D2_isotropic.nii.gz
+                                        │   │   ├── *__MRDS_D2_num_tensors.nii.gz
+                                        │   │   ├── *__MRDS_D2_evecs.nii.gz
+                                        │   │   ├── *__MRDS_D3_signal_fraction.nii.gz (3 tensor MRDS files)
+                                        │   │   ├── *__MRDS_D3_eigenvalues.nii.gz
+                                        │   │   ├── *__MRDS_D3_isotropic.nii.gz
+                                        │   │   ├── *__MRDS_D3_num_tensors.nii.gz
+                                        │   │   ├── *__MRDS_D3_evecs.nii.gz
+                                        │   │   └── *__DTInolin_ResponseAnisotropic.txt (inital diffusivities for MRDS)
+                                        │   ├── Compute_TODI
+                                        │   │   ├── *TOD_SH.nii.gz (track orientation density image in SH)
+                                        │   │   └── *TOD_NUFO.nii.gz (number of fiber orientations image extracted from TOD image)
+                                        │   ├── Modsel_TODI
+                                        │   │   ├── *__MRDS_signal_fraction.nii.gz (MRDS files with TODI model selection)
+                                        │   │   ├── *__MRDS_eigenvalues.nii.gz
+                                        │   │   ├── *__MRDS_isotropic.nii.gz
+                                        │   │   ├── *__MRDS_num_tensors.nii.gz
+                                        │   │   └── *__MRDS_evecs.nii.gz
+                                        │   ├── MRDS_Metrics
+                                        │   │   ├── *__MRDS_FA.nii.gz (fixel-FA metric with TODI model selection)
+                                        │   │   ├── *__MRDS_RD.nii.gz (fixel-RD metric with TODI model selection)
+                                        │   │   ├── *__MRDS_AD.nii.gz (fixel-AD metric with TODI model selection)
+                                        │   │   └── *__MRDS_MD.nii.gz (fixel-MD metric with TODI model selection)
+                                        └── S2
+                                            └── *
+
+The output files have the following format:
+
+`<sid>__MRDS_<method>_<modsel>_<metric>.nii.gz`,
+
+where
+
+<sid> represents the subject ID.
+
+<modsel> represents the model selection used by MRDS to estimate the number of
+tensors per voxel. There are 5 different models:
+    'D1': All voxels have exactly 1 tensors.
+    'D2': All voxels have exactly 2 tensors.
+    'D3': All voxels have exactly 3 tensors.
+    'BIC': Bayesian Information Criteria (BIC) determinates the number of tensors
+    'TODI': Track Orientation Distribution Imagining (TODI) determinates the number of tensors.
+
+<metric> represents the actual metric stored in the file. There 
+    'FA': fixel-FA metric
+    'RD': fixel-RD metric
+    'AD': fixel-AD metric
+    'MD': fixel-MD metric
+    'evecs': Principal diffusion directions of the tensors
+    'num_tensors': Number of tensors
+    'signal_fraction': Compartment sizes of the tensors
+    'isotropic': isotropic volume fraction and diffusivity
+    'eigenvalues': eigenvalues of the tensors
+    'MSE': Mean squared error of the fitting.
+
+NOTES
+=======
+
+The 'scilpy/scripts' and MRDS bin folders should be in your PATH environment variable. Not necessary if the
+Singularity container is used.
+
+The intermediate working directory is, by default, set to './work'.
+To change it, use the '-w WORK_DIR' argument.
+
+The default config file is mrds_flow/nextflow.config.
+Use '-C config_file.config' to specify a non-default configuration file.
+The '-C config_file.config' must be inserted after the nextflow call
+like 'nextflow -C config_file.config run ...'.
