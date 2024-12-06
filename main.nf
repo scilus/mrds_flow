@@ -151,12 +151,11 @@ process Fit_MRDS {
              "${sid}__D3_evals.nii.gz", \
              "${sid}__D3_isotropic.nii.gz", \
              "${sid}__D3_num_tensors.nii.gz", \
-             "${sid}__D3_evecs.nii.gz" into mrds_for_modsel optional true
+             "${sid}__D3_evecs.nii.gz" into mrds_for_modsel
     
-    path("${sid}__DTInolin_ResponseAnisotropic.txt") optional true
-    path("${sid}_d_perp.txt") optional true
-    path("${sid}_d_par.txt") optional true
-    path("*nii.gz") optional true
+    path("${sid}__DTInolin_ResponseAnisotropic.txt")
+    path("${sid}_d_perp.txt")
+    path("${sid}_d_par.txt")
 
     script:
     iso=""
@@ -190,7 +189,7 @@ process Fit_MRDS {
         $iso \
         -mse \
         -method Diff
-    
+
     for v in V1 V2 V3; do
         mv ${sid}__MRDS_Diff_\${v}_COMP_SIZE.nii.gz ${sid}__\${v/V/D}_signal_fraction.nii.gz
         mv ${sid}__MRDS_Diff_\${v}_PDDs_CARTESIAN.nii.gz ${sid}__\${v/V/D}_evecs.nii.gz
@@ -198,6 +197,7 @@ process Fit_MRDS {
         mv ${sid}__MRDS_Diff_\${v}_ISOTROPIC.nii.gz ${sid}__\${v/V/D}_isotropic.nii.gz
         mv ${sid}__MRDS_Diff_\${v}_NUM_COMP.nii.gz ${sid}__\${v/V/D}_num_tensors.nii.gz
     done
+
     """
 }
 
@@ -254,26 +254,19 @@ process Modsel {
         path(n3_signal_fraction), path(n3_eigen), path(n3_iso), path(n3_num_tensors), path(n3_evecs) from dwi_nufo_mrds_for_modsel
 
     output:
-    set sid, "${sid}__evals.nii.gz" into eigenvalues_for_metrics
-    path("${sid}__signal_fraction.nii.gz")
-    path("${sid}__isotropic.nii.gz")
-    path("${sid}__num_tensors.nii.gz")
-    path("${sid}__evecs.nii.gz")
+    set sid, "${sid}__MRDS_evals.nii.gz" into eigenvalues_for_metrics
+    path("${sid}__MRDS_signal_fraction.nii.gz")
+    path("${sid}__MRDS_isotropic.nii.gz")
+    path("${sid}__MRDS_num_tensors.nii.gz")
+    path("${sid}__MRDS_evecs.nii.gz")
 
     script:
     """
-    scil_mrds_select_number_of_tensors.py ${nufo} ${dwi} \
-        --N1 ${n1_signal_fraction} ${n1_eigen} ${n1_iso} ${n1_num_tensors} ${n1_evecs} \
-        --N2 ${n2_signal_fraction} ${n2_eigen} ${n2_iso} ${n2_num_tensors} ${n2_evecs} \
-        --N3 ${n3_signal_fraction} ${n3_eigen} ${n3_iso} ${n3_num_tensors} ${n3_evecs} \
-        --prefix ${sid}_ \
+    scil_volume_math.py convert ${nufo} ${sid}_nufo.nii.gz --data_type uint8 -f
+
+    scil_mrds_select_number_of_tensors.py ${sid}_ ${sid}_nufo.nii.gz \
+        --out_prefix ${sid}_ \
         --mask ${mask}
-    
-    mv ${sid}__PDDs_CARTESIAN.nii.gz ${sid}__evecs.nii.gz
-    mv ${sid}__COMP_SIZE.nii.gz ${sid}__signal_fraction.nii.gz
-    mv ${sid}__EIGENVALUES.nii.gz ${sid}__evals.nii.gz
-    mv ${sid}__ISOTROPIC.nii.gz ${sid}__isotropic.nii.gz
-    mv ${sid}__NUM_COMP.nii.gz ${sid}__num_tensors.nii.gz
     """
 }
 
