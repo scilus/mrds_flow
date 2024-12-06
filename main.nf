@@ -105,15 +105,18 @@ process Convert_Scheme {
     """
 }
 
+create_masks.count().set{masks_counter}
+
 process Compute_Mask {
     input:
     set sid, path(tracking) from tractogram_for_mask
+    val(masks_count) from masks_counter
 
     output:
     set sid, "${sid}__mask.nii.gz" into computed_mask_for_mrds
 
     when:
-    (create_masks.count() == 0)
+    (masks_count == 0)
 
     script:
     """
@@ -128,6 +131,8 @@ only_dwi_for_mrds
     .set{dwi_scheme_mask_for_mrds}
 
 process Fit_MRDS {
+    cpus params.mrds_processes
+
     input:
     set sid, path(dwi), path(scheme), path(mask) from dwi_scheme_mask_for_mrds
 
@@ -163,6 +168,7 @@ process Fit_MRDS {
     dti $dwi $scheme $sid -mask $mask -response 0 -correction 0
     rm -rf *_DTInolin*.nii.gz *_DTInolin_ResponseIsotropic.txt
     cp ${sid}_DTInolin_ResponseAnisotropic.txt DTInolin_ResponseAnisotropic.txt
+    mv ${sid}_DTInolin_ResponseAnisotropic.txt ${sid}__DTInolin_ResponseAnisotropic.txt
 
     # Extract diffisivities
     line=\$(head -n 1 DTInolin_ResponseAnisotropic.txt)
@@ -188,7 +194,6 @@ process Fit_MRDS {
     for v in V1 V2 V3; do
         mv ${sid}__MRDS_Diff_\${v}_COMP_SIZE.nii.gz ${sid}__\${v/V/D}_signal_fraction.nii.gz
         mv ${sid}__MRDS_Diff_\${v}_PDDs_CARTESIAN.nii.gz ${sid}__\${v/V/D}_evecs.nii.gz
-        mv ${sid}__MRDS_Diff_\${v}_COMP_SIZE.nii.gz ${sid}__\${v/V/D}_signal_fraction.nii.gz
         mv ${sid}__MRDS_Diff_\${v}_EIGENVALUES.nii.gz ${sid}__\${v/V/D}_evals.nii.gz
         mv ${sid}__MRDS_Diff_\${v}_ISOTROPIC.nii.gz ${sid}__\${v/V/D}_isotropic.nii.gz
         mv ${sid}__MRDS_Diff_\${v}_NUM_COMP.nii.gz ${sid}__\${v/V/D}_num_tensors.nii.gz
@@ -201,6 +206,9 @@ only_dwi_for_todi
     .set{dwi_tractogram_for_todi}
 
 process Compute_TODI {
+    memory 10.GB
+    cpus 10
+
     input:
     set sid, path(dwi), path(tractogram) from dwi_tractogram_for_todi
 
@@ -210,9 +218,15 @@ process Compute_TODI {
 
     script:
     """
-    scil_tractogram_compute_TODI.py ${tractogram} \
+    scil_tractogram_remove_invalid.py ${tractogram} tmp.trk \
+        --cut_invalid \
+        --remove_single_point \
+        --remove_overlapping_points \
+        --no_empty \
+        --reference ${dwi}
+
+    scil_tractogram_compute_TODI.py tmp.trk \
         --out_todi_sh ${sid}__TODI_SH.nii.gz \
-        --reference ${dwi} \
         --sh_basis descoteaux07 -f
 
     scil_fodf_metrics.py ${sid}__TODI_SH.nii.gz \
@@ -220,6 +234,8 @@ process Compute_TODI {
         --not_all \
         --sh_basis descoteaux07 \
         --rt ${params.r_threshold} -f
+
+    rm -rf tmp.trk
     """
 }
 
