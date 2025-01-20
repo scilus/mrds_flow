@@ -9,8 +9,8 @@ To call with a container add:
     -with-singularity mrds_flow.sif
     -with-docker mrds_flow
 
-You will need this container (tag:1.0.0) in order to run the pipeline.
-- https://hub.docker.com/r/erickberto/mrds-flow
+You will need this container (tag:shuffle) in order to run the pipeline.
+- https://hub.docker.com/r/scilus/mrds-flow
 
 MRDS must be installed from https://github.com/rcleija/mrds (already install in the container)
 
@@ -65,21 +65,21 @@ OUTPUT
                                         |   ├── Compute_Mask
                                         |   |   └── *mask.nii.gz (automatic computed WM mask)
                                         │   ├── Fit_MRDS
-                                        │   │   ├── *__MRDS_D1_signal_fraction.nii.gz (1 tensor MRDS files)
-                                        │   │   ├── *__MRDS_D1_eigenvalues.nii.gz
-                                        │   │   ├── *__MRDS_D1_isotropic.nii.gz
-                                        │   │   ├── *__MRDS_D1_num_tensors.nii.gz
-                                        │   │   ├── *__MRDS_D1_evecs.nii.gz
-                                        │   │   ├── *__MRDS_D2_signal_fraction.nii.gz (2 tensor MRDS files)
-                                        │   │   ├── *__MRDS_D2_eigenvalues.nii.gz
-                                        │   │   ├── *__MRDS_D2_isotropic.nii.gz
-                                        │   │   ├── *__MRDS_D2_num_tensors.nii.gz
-                                        │   │   ├── *__MRDS_D2_evecs.nii.gz
-                                        │   │   ├── *__MRDS_D3_signal_fraction.nii.gz (3 tensor MRDS files)
-                                        │   │   ├── *__MRDS_D3_eigenvalues.nii.gz
-                                        │   │   ├── *__MRDS_D3_isotropic.nii.gz
-                                        │   │   ├── *__MRDS_D3_num_tensors.nii.gz
-                                        │   │   ├── *__MRDS_D3_evecs.nii.gz
+                                        │   │   ├── *__D1_signal_fraction.nii.gz (1 tensor MRDS files)
+                                        │   │   ├── *__D1_eigenvalues.nii.gz
+                                        │   │   ├── *__D1_isotropic.nii.gz
+                                        │   │   ├── *__D1_num_tensors.nii.gz
+                                        │   │   ├── *__D1_evecs.nii.gz
+                                        │   │   ├── *__D2_signal_fraction.nii.gz (2 tensor MRDS files)
+                                        │   │   ├── *__D2_eigenvalues.nii.gz
+                                        │   │   ├── *__D2_isotropic.nii.gz
+                                        │   │   ├── *__D2_num_tensors.nii.gz
+                                        │   │   ├── *__D2_evecs.nii.gz
+                                        │   │   ├── *__D3_signal_fraction.nii.gz (3 tensor MRDS files)
+                                        │   │   ├── *__D3_eigenvalues.nii.gz
+                                        │   │   ├── *__D3_isotropic.nii.gz
+                                        │   │   ├── *__D3_num_tensors.nii.gz
+                                        │   │   ├── *__D3_evecs.nii.gz
                                         │   │   └── *__DTInolin_ResponseAnisotropic.txt (inital diffusivities for MRDS)
                                         │   ├── Compute_TODI
                                         │   │   ├── *TOD_SH.nii.gz (track orientation density image in SH)
