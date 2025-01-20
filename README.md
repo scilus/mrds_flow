@@ -30,10 +30,10 @@ Singularity/Docker
 If you are on Linux, we recommend using the Singularity to run mrds_flow pipeline.
 
 If you have Apptainer (Singularity), build the .sif image with:
-`singularity build mrds-flow_dev.sif docker://scilus/mrds-flow:dev`.
+`singularity build mrds-flow_shuffle.sif docker://scilus/mrds-flow:shuffle`.
 
 Then, launch your Nextflow command with:
-`-with-singularity ABSOLUTE_PATH/mrds-flow_dev.sif`.
+`-with-singularity ABSOLUTE_PATH/mrds-flow_shuffle.sif`.
 
 If you are on MacOS or Windows, we recommend using the Docker container to run mrds_flow pipeline.
 
@@ -41,7 +41,7 @@ Pull the image with:
 `docker pull https://hub.docker.com/r/scilus/mrds-flow`.
 
 Launch your Nextflow command with:
-`-with-docker scilus/mrds-flow:dev`.
+`-with-docker scilus/mrds-flow:shuffle`.
 
 Usage
 -----
