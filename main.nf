@@ -151,11 +151,12 @@ process Fit_MRDS {
              "${sid}__D3_evals.nii.gz", \
              "${sid}__D3_isotropic.nii.gz", \
              "${sid}__D3_num_tensors.nii.gz", \
-             "${sid}__D3_evecs.nii.gz" into mrds_for_modsel
+             "${sid}__D3_evecs.nii.gz" into mrds_for_modsel optional true
     
     path("${sid}__DTInolin_ResponseAnisotropic.txt")
     path("${sid}_d_perp.txt")
     path("${sid}_d_par.txt")
+    path("${sid}*")
 
     script:
     iso=""
@@ -191,13 +192,12 @@ process Fit_MRDS {
         -method Diff
 
     for v in V1 V2 V3; do
-        mv ${sid}__MRDS_Diff_\${v}_COMP_SIZE.nii.gz ${sid}__\${v/V/D}_signal_fraction.nii.gz
-        mv ${sid}__MRDS_Diff_\${v}_PDDs_CARTESIAN.nii.gz ${sid}__\${v/V/D}_evecs.nii.gz
-        mv ${sid}__MRDS_Diff_\${v}_EIGENVALUES.nii.gz ${sid}__\${v/V/D}_evals.nii.gz
-        mv ${sid}__MRDS_Diff_\${v}_ISOTROPIC.nii.gz ${sid}__\${v/V/D}_isotropic.nii.gz
-        mv ${sid}__MRDS_Diff_\${v}_NUM_COMP.nii.gz ${sid}__\${v/V/D}_num_tensors.nii.gz
+        mv ${sid}_MRDS_Diff_\${v}_COMP_SIZE.nii.gz ${sid}__\${v/V/D}_signal_fraction.nii.gz
+        mv ${sid}_MRDS_Diff_\${v}_PDDs_CARTESIAN.nii.gz ${sid}__\${v/V/D}_evecs.nii.gz
+        mv ${sid}_MRDS_Diff_\${v}_EIGENVALUES.nii.gz ${sid}__\${v/V/D}_evals.nii.gz
+        mv ${sid}_MRDS_Diff_\${v}_ISOTROPIC.nii.gz ${sid}__\${v/V/D}_isotropic.nii.gz
+        mv ${sid}_MRDS_Diff_\${v}_NUM_COMP.nii.gz ${sid}__\${v/V/D}_num_tensors.nii.gz
     done
-
     """
 }
 
@@ -206,9 +206,6 @@ only_dwi_for_todi
     .set{dwi_tractogram_for_todi}
 
 process Compute_TODI {
-    memory 10.GB
-    cpus 10
-
     input:
     set sid, path(dwi), path(tractogram) from dwi_tractogram_for_todi
 
