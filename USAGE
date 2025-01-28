@@ -18,11 +18,15 @@ MRDS must be installed from https://github.com/rcleija/mrds (already installed i
 Warning
 =======
 If using this pipeline, please read and cite the following publications:
-[1] Coronado-Leija, R., Ramirez-Manzanares, A., Marroquin, J.L. (2017).
+[1] Dhollander, T., Emsell, L., Van Hecke, W., Maes, F., Sunaert, S., Suetens, P. (2014).
+    Track Orientation Density Imaging (TODI) and Track Orientation Distribution (TOD) based tractography.
+    NeuroImage, 94, 312-336. https://doi.org/10.1016/j.neuroimage.2013.12.047
+
+[2] Coronado-Leija, R., Ramirez-Manzanares, A., Marroquin, J.L. (2017).
     Estimation of individual axon bundle properties by a Multi-Resolution Discrete-Search method.
     Medical Image Analysis, 42, 26-43. https://doi.org/10.1016/j.media.2017.06.008
 
-[2] Hernandez-Gutierrez, E., Coronado-Leija, R., Ramirez-Manzanares, A., Barakovic, M., Magon, S., Descoteaux, M. (2023).
+[3] Hernandez-Gutierrez, E., Coronado-Leija, R., Ramirez-Manzanares, A., Barakovic, M., Magon, S., Descoteaux, M. (2023).
     Improving Multi-Tensor Fitting with Global Information from Track Orientation Density Imaging.
     Computational Diffusion MRI. CDMRI 2023. Lecture Notes in Computer Science, vol 14328. Springer, Cham. https://doi.org/10.1007/978-3-031-47292-3_4
 
