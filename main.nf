@@ -153,7 +153,7 @@ process Fit_MRDS {
              "${sid}__D3_num_tensors.nii.gz", \
              "${sid}__D3_evecs.nii.gz" into mrds_for_modsel optional true
     
-    path("${sid}__DTInolin_ResponseAnisotropic.txt")
+    path("${sid}__ResponseAnisotropic.txt")
     path("${sid}_d_perp.txt")
     path("${sid}_d_par.txt")
     path("${sid}*")
@@ -168,7 +168,7 @@ process Fit_MRDS {
     dti $dwi $scheme $sid -mask $mask -response 0 -correction 0
     rm -rf *_DTInolin*.nii.gz *_DTInolin_ResponseIsotropic.txt
     cp ${sid}_DTInolin_ResponseAnisotropic.txt DTInolin_ResponseAnisotropic.txt
-    mv ${sid}_DTInolin_ResponseAnisotropic.txt ${sid}__DTInolin_ResponseAnisotropic.txt
+    mv ${sid}_DTInolin_ResponseAnisotropic.txt ${sid}__ResponseAnisotropic.txt
 
     # Extract diffisivities
     line=\$(head -n 1 DTInolin_ResponseAnisotropic.txt)
@@ -243,7 +243,7 @@ nufo_for_modsel
     .set{dwi_nufo_mrds_for_modsel}
 
 
-process Modsel {
+process Select_MRDS_based_on_TODI {
     input:
     set sid, path(nufo), path(dwi), path(mask), \
         path(n1_signal_fraction), path(n1_eigen), path(n1_iso), path(n1_num_tensors), path(n1_evecs), \

@@ -18,7 +18,7 @@ Improving Multi-Tensor Fitting with Global Information from Track Orientation De
 Computational Diffusion MRI. CDMRI 2023. Lecture Notes in Computer Science, vol 14328. Springer, Cham. https://doi.org/10.1007/978-3-031-47292-3_4
 ```
 
-Requeriments
+Requirements
 ------------
 
 - [Nextflow](https://www.nextflow.io)

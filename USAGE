@@ -12,14 +12,23 @@ To call with a container add:
 You will need this container (tag:shuffle) in order to run the pipeline.
 - https://hub.docker.com/r/scilus/mrds-flow
 
-MRDS must be installed from https://github.com/rcleija/mrds (already install in the container)
+MRDS must be installed from https://github.com/rcleija/mrds (already installed in the container)
 
 
 Warning
 =======
 If using this pipeline, please read and cite the following publications:
-[1] MRDS-paper 
-[2] Frontiers paper
+[1] Dhollander, T., Emsell, L., Van Hecke, W., Maes, F., Sunaert, S., Suetens, P. (2014).
+    Track Orientation Density Imaging (TODI) and Track Orientation Distribution (TOD) based tractography.
+    NeuroImage, 94, 312-336. https://doi.org/10.1016/j.neuroimage.2013.12.047
+
+[2] Coronado-Leija, R., Ramirez-Manzanares, A., Marroquin, J.L. (2017).
+    Estimation of individual axon bundle properties by a Multi-Resolution Discrete-Search method.
+    Medical Image Analysis, 42, 26-43. https://doi.org/10.1016/j.media.2017.06.008
+
+[3] Hernandez-Gutierrez, E., Coronado-Leija, R., Ramirez-Manzanares, A., Barakovic, M., Magon, S., Descoteaux, M. (2023).
+    Improving Multi-Tensor Fitting with Global Information from Track Orientation Density Imaging.
+    Computational Diffusion MRI. CDMRI 2023. Lecture Notes in Computer Science, vol 14328. Springer, Cham. https://doi.org/10.1007/978-3-031-47292-3_4
 
 DESCRIPTION
 =======
@@ -70,21 +79,21 @@ OUTPUT
                                         │   │   ├── *__D1_isotropic.nii.gz
                                         │   │   ├── *__D1_num_tensors.nii.gz
                                         │   │   ├── *__D1_evecs.nii.gz
-                                        │   │   ├── *__D2_signal_fraction.nii.gz (2 tensor MRDS files)
+                                        │   │   ├── *__D2_signal_fraction.nii.gz (2 tensors MRDS files)
                                         │   │   ├── *__D2_eigenvalues.nii.gz
                                         │   │   ├── *__D2_isotropic.nii.gz
                                         │   │   ├── *__D2_num_tensors.nii.gz
                                         │   │   ├── *__D2_evecs.nii.gz
-                                        │   │   ├── *__D3_signal_fraction.nii.gz (3 tensor MRDS files)
+                                        │   │   ├── *__D3_signal_fraction.nii.gz (3 tensors MRDS files)
                                         │   │   ├── *__D3_eigenvalues.nii.gz
                                         │   │   ├── *__D3_isotropic.nii.gz
                                         │   │   ├── *__D3_num_tensors.nii.gz
                                         │   │   ├── *__D3_evecs.nii.gz
-                                        │   │   └── *__DTInolin_ResponseAnisotropic.txt (inital diffusivities for MRDS)
+                                        │   │   └── *__ResponseAnisotropic.txt (initial diffusivities for MRDS)
                                         │   ├── Compute_TODI
                                         │   │   ├── *TOD_SH.nii.gz (track orientation density image in SH)
                                         │   │   └── *TOD_NUFO.nii.gz (number of fiber orientations image extracted from TOD image)
-                                        │   ├── Modsel_TODI
+                                        │   ├── Select_MRDS_based_on_TODI
                                         │   │   ├── *__MRDS_signal_fraction.nii.gz (MRDS files with TODI model selection)
                                         │   │   ├── *__MRDS_eigenvalues.nii.gz
                                         │   │   ├── *__MRDS_isotropic.nii.gz
@@ -108,11 +117,11 @@ where
 
 <modsel> represents the model selection used by MRDS to estimate the number of
 tensors per voxel. There are 5 different models:
-    'D1': All voxels have exactly 1 tensors.
+    'D1': All voxels have exactly 1 tensor.
     'D2': All voxels have exactly 2 tensors.
     'D3': All voxels have exactly 3 tensors.
-    'BIC': Bayesian Information Criteria (BIC) determinates the number of tensors
-    'TODI': Track Orientation Distribution Imagining (TODI) determinates the number of tensors.
+    'BIC': Bayesian Information Criteria (BIC) determines the number of tensors
+    'TODI': Track Orientation Distribution Imagining (TODI) determines the number of tensors.
 
 <metric> represents the actual metric stored in the file. There 
     'FA': fixel-FA metric
